@@ -1,12 +1,12 @@
 //require mongoose module
-var mongoose = require("mongoose");
-const config = require("./index");
+import mongoose from"mongoose";
+import config from"./index.js";
 //require database URL from properties file
 var dbURL = config.DB;
 
 
 //export this function and imported by server.js
-module.exports = function () {
+export default function () {
   return new Promise((resolve) => {
     mongoose.connect(dbURL, {
       useNewUrlParser: true,

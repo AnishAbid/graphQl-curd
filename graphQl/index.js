@@ -1,6 +1,6 @@
-const graphql = require('graphql');
-const Book = require('../models/book');
-const Author = require('../models/author');
+import graphql from 'graphql';
+import {Book} from '../models/book.js';
+import {Author} from '../models/author.js';
 
 
 
@@ -140,7 +140,8 @@ const Mutation = new GraphQLObjectType({
 
 //Creating a new GraphQL Schema, with options query which defines query
 //we will allow users to use when they are making requests.
-module.exports = new GraphQLSchema({
-   query: RootQuery,
-   mutation: Mutation
-});
+const schema = new GraphQLSchema({
+    query: RootQuery,
+    mutation: Mutation
+ });
+export default schema

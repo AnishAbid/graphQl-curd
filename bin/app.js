@@ -1,8 +1,9 @@
-const express = require('express');
-const {graphqlHTTP} = require('express-graphql');
-const schema = require('../graphQl/index')
-const config = require('../configs')
-const Db = require('../configs/db')()
+import express from 'express';
+import {graphqlHTTP} from 'express-graphql';
+import schema from'../graphQl/index.js';
+import config from'../configs/index.js';
+import Db from'../configs/db.js'
+Db()
 const app = express();
 
  
