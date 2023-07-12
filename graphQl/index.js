@@ -160,6 +160,16 @@ const Mutation = new GraphQLObjectType({
                return book.save()
            }
        },
+       /*
+       Postman send file example 
+       Datatype: form-data
+       key: operations
+       value: {"query":"mutation addPhoto($file:Upload!) {addPhoto(file: $file,description:\"ATR\",tags:\"KTDO\"){fileLocation,description,tags}}"}
+       key: map
+       value: {"0": ["variables.file"]}
+       key: 0
+       value: file
+       */
        addPhoto: {
         type:  FileType,
         args:{
