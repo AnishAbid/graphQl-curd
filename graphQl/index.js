@@ -1,16 +1,32 @@
 import graphql from 'graphql';
 import {Book} from '../models/book.js';
 import {Author} from '../models/author.js';
-
+import fs from 'fs'
+import  GraphQLUpload  from 'graphql-upload/GraphQLUpload.mjs'
 
 
 const {
    GraphQLObjectType, GraphQLString,
    GraphQLID, GraphQLInt,GraphQLSchema,
-   GraphQLList,GraphQLNonNull
+   GraphQLList,GraphQLNonNull,GraphQLScalarType,GraphQLObject
 } = graphql;
 
-
+const storeFS = ({ stream, filename }) => {
+    const uploadDir = './public/photos';
+    const path = `${uploadDir}/${filename}`;
+    return new Promise((resolve, reject) =>
+        stream
+            .on('error', error => {
+                if (stream.truncated)
+                    // delete the truncated file
+                    fs.unlinkSync(path);
+                reject(error);
+            })
+            .pipe(fs.createWriteStream(path))
+            .on('error', error => reject(error))
+            .on('finish', () => resolve({ path }))
+    );
+}
 
 //Schema defines data on the Graph like object types(book type), relation between
 //these object types and describes how it can reach into the graph to interact with
@@ -52,7 +68,18 @@ const AuthorType = new GraphQLObjectType({
        }
    })
 })
-
+const FileType = new GraphQLObjectType({
+    name: 'File',
+    //We are wrapping fields in the function as we dont want to execute this ultil
+    //everything is inilized. For example below code will throw an error AuthorType not
+    //found if not wrapped in a function
+    fields: () => ({
+        fileLocation: { type: GraphQLString  },
+        description: { type: GraphQLString },
+        tags: { type: GraphQLString },
+        
+    })
+ });
 
 
 //RootQuery describe how users can use the graph and grab data.
@@ -132,7 +159,28 @@ const Mutation = new GraphQLObjectType({
                })
                return book.save()
            }
-       }
+       },
+       addPhoto: {
+        type:  FileType,
+        args:{
+            file: {type:GraphQLUpload},
+            description: { type: new GraphQLNonNull(GraphQLString)},
+            tags: { type: new GraphQLNonNull(GraphQLString)}
+        },
+        async resolve(parent,args){
+            const { description, tags } = args;
+            const { filename, mimetype, createReadStream } = await args.file;
+        const stream = createReadStream();
+        const pathObj = await storeFS({ stream, filename });
+        const fileLocation = pathObj.path;
+        const photo = {
+            fileLocation,
+            description,
+            tags
+        }
+        return photo;
+        }
+    }
    }
 });
 

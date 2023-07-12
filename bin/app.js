@@ -4,13 +4,14 @@ import schema from'../graphQl/index.js';
 import config from'../configs/index.js';
 import Db from'../configs/db.js'
 Db()
+import  graphqlUploadExpress  from 'graphql-upload/graphqlUploadExpress.mjs'
 const app = express();
 
  
 //This route will be used as an endpoint to interact with Graphql,
 //All queries will go through this route.
  
-app.use('/graphql', graphqlHTTP({
+app.use('/graphql',graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }), graphqlHTTP({
  
    //directing express-graphql to use this schema to map out the graph
  
