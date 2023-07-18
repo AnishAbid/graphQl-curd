@@ -11,7 +11,9 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
  
-
+/* 
+read file from server configuration
+*/
 app.use(express.static(path.join(__dirname, '../public')));
 app.use('/photos', express.static(path.join(__dirname, '../public/photos')));
 //This route will be used as an endpoint to interact with Graphql,
